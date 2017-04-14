@@ -1,9 +1,13 @@
 
 # ubuntu14.04 安装docker和简单实用
 
-* 安装教程
+* 安装教程（自行google/baidu)
 
 https://github.com/doctording/chinese_docker/blob/master/installation/ubuntu.md
+
+```
+Usage: service docker {start|stop|restart|status}
+```
 
 * 注册docker账号
 
@@ -82,6 +86,8 @@ docker stop 命令会通知 Docker 停止正在运行的容器。如果它成功
 ---
 
 # 镜像
+
+Docker运行容器前需要本地存在对应的镜像，如果镜像不存在本地，Docker会尝试先从默认的镜像仓库下载（hub.docker.com）,用户也可以配置，使用自定义的镜像仓库。
 
 ## 管理和使用本地 Docker 主机镜像。
 
@@ -167,5 +173,74 @@ docker push doctordingdocker/sinatra
 ![](./imgs/build_success.png)
 
 ![](./imgs/xxx.png)
+
+
+### 下载自己的镜像，检测运行（$docker pull）
+
+![](./imgs/docker_pull.png)
+
+```
+ding@ubuntu:~$ sudo docker pull doctordingdocker/sinatra:devel
+devel: Pulling from doctordingdocker/sinatra
+d24bc6f195c3: Pulling fs layer 
+a994fca0b2a3: Download complete 
+958046a70c9d: Download complete 
+0e4fa347e95d: Download complete 
+2f0af262ade7: Download complete 
+b279d3f7b9c5: Download complete 
+91efd5ef1463: Download complete 
+```
+
+---
+
+# 容器
+
+**对docker容器和镜像的区别理解？**
+
+参考如下网址讲解（初学，我也不理解，有个印象）
+
+http://blog.csdn.net/chszs/article/details/48252799
+
+http://www.csdn.net/article/2015-08-21/2825511
+
+## 创建
+
+* 新建容器（处于stopped状态下），然后运行它
+
+* 基于镜像新建一个容器并启动
+
+```
+ding@ubuntu:~$ sudo docker create -it ubuntu:latest
+Unable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+c62795f78da9: Pull complete 
+d4fceeeb758e: Pull complete 
+5c9125a401ae: Pull complete 
+0062f774e994: Pull complete 
+6b33fd031fac: Pull complete 
+Digest: sha256:c2bbf50d276508d73dd865cda7b4ee9b5243f2648647d21e3a471dd3cc4209a0
+Status: Downloaded newer image for ubuntu:latest
+53feceb3fe820943ba0a10284a37af3fde030846c6075c61cc56be313161605d
+ding@ubuntu:~$ sudo docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+ubuntu              latest              6a2f32de169d        29 hours ago        117MB
+hello-world         latest              48b5124b2768        3 months ago        1.84kB
+ding@ubuntu:~$ sudo docker run ubuntu /bin/echo 'hello docker'
+hello docker
+ding@ubuntu:~$
+```
+
+* $docker ps
+
+![](./imgs/docker_ps.png)
+
+## 终止容器($docker stop)
+
+## 进入容器
+在使用-d参数时，容器启动后会进入后台，用户无法看到容器中的信息。某些时候如果需要进入容器进行操作，有多种方法，包括使用docker attach命令，docker exec命令，以及nsenter工具等。
+
+## 删除容器($docker rm)
+
+## 导入和导出容器($docker import/export)
 
 ---

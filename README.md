@@ -241,6 +241,12 @@ ding@ubuntu:~$
 
 ## 删除容器($docker rm)
 
+![](./imgs/docker_rm.png)
+
 ## 导入和导出容器($docker import/export)
+
+![](./imgs/docker_export.png)
+
+![](./imgs/docker_import.png)
 
 ---

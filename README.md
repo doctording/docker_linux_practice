@@ -191,6 +191,8 @@ b279d3f7b9c5: Download complete
 91efd5ef1463: Download complete 
 ```
 
+![](./imgs/docker_pull_success.png)
+
 ---
 
 # 容器

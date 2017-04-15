@@ -1,5 +1,5 @@
 
-# ubuntu14.04 安装docker和简单实用
+# ubuntu 安装docker和简单实用
 
 * 安装教程（自行google/baidu)
 
@@ -250,5 +250,138 @@ ding@ubuntu:~$
 ![](./imgs/docker_export.png)
 
 ![](./imgs/docker_import.png)
+
+---
+
+# 数据卷
+
+Volumn(卷):将物理机的文件夹挂载到容器内部
+
+* 数据卷可以在容器之间共享和重用
+* 对数据卷的修改会立马生效
+* 对数据卷的更新，不会影响镜像
+* 卷会一直存在，直到没有容器使用
+
+数据卷的使用，类似于linux下对目录或文件进行mount操作。
+
+## 创建数据卷
+
+参考：http://www.cnblogs.com/liuyansheng/p/6097710.html
+
+容器管理实验中我们学习的命令 docker run 用来创建容器，可以在使用改命令时添加 -v 参数，就可以创建并挂载一个到多个数据卷到当前运行的容器中，-v的作用是将宿主机的一个目录作为容器的数据卷挂载到容器中，使宿主机和容器之间可以共享一个目录，如果本地路径不存在，Docker也会自动创建。
+
+
+* 分别将两个目录挂载到新创建的容器上
+
+/tmp/data1, /tmo/data2是本地宿主机目录
+
+/data1, /data2 是新创建容器的目录，是挂载目录
+
+```
+ding@ubuntu:/tmp$ sudo docker run -t -i --name shiyanlou -v /tmp/data1:/data1 -v /tmp/data2:/data2 ubuntu /bin/bash
+root@70fabbea4a95:/# ls
+bin  boot  data1  data2  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+root@70fabbea4a95:/# 
+```
+
+* 查看容器数据卷信息
+
+```
+$sudo docker inspect shiyanlou
+```
+可以找到如下的信息
+```
+ "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/tmp/data1",
+                "Destination": "/data1",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            },
+            {
+                "Type": "bind",
+                "Source": "/tmp/data2",
+                "Destination": "/data2",
+                "Mode": "",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+
+```
+
+* 数据卷中的数据在宿主机和容器共享
+
+在容器中往数据卷中写入文件
+```
+root@70fabbea4a95:/# touch data1/file01
+root@70fabbea4a95:/# ls -l data*
+data1:
+total 0
+-rw-r--r-- 1 root root 0 Apr 15 00:59 file01
+
+data2:
+total 0
+root@70fabbea4a95:/#
+```
+
+然后查看宿主机
+```
+ding@ubuntu:/tmp$ ls -l data*
+data1:
+total 0
+
+data2:
+total 0
+ding@ubuntu:/tmp$ ls -l data*
+data1:
+total 0
+-rw-r--r-- 1 root root 0 Apr 14 17:59 file01
+
+data2:
+total 0
+ding@ubuntu:/tmp$ 
+```
+
+![](./imgs/docker_volumn.png)
+
+
+## 数据卷容器
+
+在其他容器中使用 --volumes-from 来挂载某个容器中的数据卷
+
+如下，新建一个db1容器，使用shiyanlou容器的数据卷，可以看到db1容器也有了data1,data2两个目录
+```
+ding@ubuntu:/tmp$ sudo docker run -t -i --volumes-from shiyanlou --name db1 ubuntu
+[sudo] password for ding: 
+root@38d22ec0d2a7:/# ls
+bin  boot  data1  data2  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+root@38d22ec0d2a7:/# 
+```
+
+![](./imgs/docker_volumn_2.png)
+
+![](./imgs/docker_volumn_3.png)
+
+
+## 数据库迁移
+
+* 备份db1容器的/data1下面的内容，到宿主机的 /tmp/backup目录下
+
+创建worker容器 运行后直接tar命令，完成备份操作
+
+```
+ding@ubuntu:/tmp$ sudo docker run --volumes-from db1 -v /tmp/backup:/backup --name worker ubuntu tar cvf /backup/backup.tar /data1
+tar: Removing leading `/' from member names
+/data1/
+/data1/file01
+ding@ubuntu:/tmp$
+```
+
+* 参看结果
+
+![](./imgs/docker_backup.png)
 
 ---

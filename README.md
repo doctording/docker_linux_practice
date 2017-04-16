@@ -232,14 +232,33 @@ hello docker
 ding@ubuntu:~$
 ```
 
-* $docker ps
+* $docker ps(显示容器)
 
 ![](./imgs/docker_ps.png)
 
-## 终止容器($docker stop)
+## 终止容器($docker stop), 开始 start, 重启 restart
 
+* 启动已被停止的容器myrunoob
+```
+docker start myrunoob
+```
+* 停止运行中的容器myrunoob
+```
+docker stop myrunoob
+```
+* 重启容器myrunoob
+```
+docker restart myrunoob
+```
 ## 进入容器
 在使用-d参数时，容器启动后会进入后台，用户无法看到容器中的信息。某些时候如果需要进入容器进行操作，有多种方法，包括使用docker attach命令，docker exec命令，以及nsenter工具等。
+
+* docker attach命令 
+![](./imgs/docker_attach.png)
+
+* docker exec
+![](./imgs/docker_exec.png)
+
 
 ## 删除容器($docker rm)
 
@@ -383,5 +402,31 @@ ding@ubuntu:/tmp$
 * 参看结果
 
 ![](./imgs/docker_backup.png)
+
+---
+
+# docker 简单web应用和网络配置
+
+**首先容器有自己的内部网络和IP地址（$docker inspect containerId）**
+
+---
+
+## 利用training/webapp，启动一个web服务
+
+```
+$sudo docker run -d -P training/webapp python app.py
+```
+
+-d 标识是让 docker 容器在后台运行。
+
+-P 标识通知 Docker 将容器内部使用的网络端口映射到我们使用的主机上(随机映射一个端口)
+
+
+-p（小写字母） 则可以指定要映射的端口，在一个端口上只可以绑定一个容器
+* ip:hostPort:containerPort
+* ip::containerPort
+* hostPort:containerPort
+
+
 
 ---

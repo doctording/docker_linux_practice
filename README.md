@@ -270,7 +270,19 @@ docker restart myrunoob
 
 ![](./imgs/docker_import.png)
 
----
+
+### 提交对容器的修改($docker commit)
+
+```
+ding@ubuntu:~$ sudo docker ps -l
+CONTAINER ID        IMAGE                            COMMAND                  CREATED             STATUS              PORTS               NAMES
+d97b59fe8da6        doctordingdocker/sinatra:devel   "ruby /data1/hello.rb"   About an hour ago   Up 8 minutes                            myweb
+ding@ubuntu:~$ sudo docker commit d97b59fe8da6
+sha256:d99cbe72738eb36c0ae6f69ee3c21003316781d8e8fa8ff4df9ee25dc19ca00e
+ding@ubuntu:~$ 
+```
+
+![](./imgs/docker_commit.png)
 
 # 数据卷
 
@@ -411,6 +423,27 @@ ding@ubuntu:/tmp$
 
 ---
 
+## 用自己的容器写一个简单的web
+
+```
+sudo docker run -d -P --volumes-from container_my --name myweb doctordingdocker/sinatra:devel ruby /data1/hello.rb
+```
+
+```
+ding@ubuntu:~$ sudo docker ps -a
+[sudo] password for ding: 
+CONTAINER ID        IMAGE                            COMMAND                  CREATED             STATUS                    PORTS               NAMES
+d97b59fe8da6        doctordingdocker/sinatra:devel   "ruby /data1/hello.rb"   4 minutes ago       Up 4 minutes                                  myweb
+8c324bcfce6b        doctordingdocker/sinatra:devel   "/bin/bash"              2 hours ago         Up 17 minutes                                 container_my
+```
+
+![](./imgs/server_1.png)
+
+![](./imgs/server_2.png)
+
+**只能用localhost(127.0.0.1):port在容器中访问到，不能在宿主机中访问到** 
+
+
 ## 利用training/webapp，启动一个web服务
 
 ```
@@ -426,7 +459,5 @@ $sudo docker run -d -P training/webapp python app.py
 * ip:hostPort:containerPort
 * ip::containerPort
 * hostPort:containerPort
-
-
 
 ---

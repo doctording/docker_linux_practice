@@ -460,4 +460,16 @@ $sudo docker run -d -P training/webapp python app.py
 * ip::containerPort
 * hostPort:containerPort
 
+![](./imgs/docker_py_web.png)
+
+宿主机的32777端口映射到了容器的5000端口
+
+* 宿主机访问容器的web应用
+
+![](./imgs/docker_net_1.png)
+
+* $docker log 查看容器应用信息
+
+![](./imgs/docker_net_2.png)
+
 ---

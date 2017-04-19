@@ -472,4 +472,23 @@ $sudo docker run -d -P training/webapp python app.py
 
 ![](./imgs/docker_net_2.png)
 
+
+# docker --link
+* 先启动一个数据库服务
+```
+$ docker run -d --name db training/postgres
+```
+
+* 接着启动一个web服务，并连接上面的数据库服务
+```
+$docker run -d -P --name web --link db:db training/webapp python app.py
+```
+这样web 容器作为一个接收者，允许访问源容器 db 的相关服务信息
+
+* 查看web容器，查看links
+```
+$docker inspect web
+```
+![](./imgs/docker_link.png)
+
 ---

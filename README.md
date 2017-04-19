@@ -193,6 +193,37 @@ b279d3f7b9c5: Download complete
 
 ![](./imgs/docker_pull_success.png)
 
+
+# hub.docker.com（远程到本地到远程）镜像修改和提交 实例
+
+* git pull 下载远程仓库镜像，并作出修改
+
+![](./imgs/docker_pull1.png)
+
+* 修改提交
+
+![](./imgs/docker_pull2.png)
+
+1. -m 来指定提交的说明信息，跟我们使用的版本控制工具一样；
+
+2. -a 可以指定更新的用户信息
+
+3. 之后是用来创建镜像的容器的 ID；
+
+4. 最后指定目标镜像的仓库名和 tag 信息。创建成功后会返回这个镜像的 ID 信息。
+
+* 查看
+
+![](./imgs/docker_pull3.png)
+
+* 将修改提交到远程
+
+![](./imgs/docker_pull4.png)
+
+* 远程仓库的查看
+
+![](./imgs/docker_pull5.png)
+
 ---
 
 # 容器

@@ -523,3 +523,187 @@ $docker inspect web
 ![](./imgs/docker_link.png)
 
 ---
+
+# Dockerfile
+
+Dockerfile分为4部分
+
+1. 基础镜像（父镜像）信息
+2. 维护者信息
+3. 镜像操作命令
+4. 容器启动命令
+
+![](./imgs/nginx/0.png)
+
+* FROM
+
+所有Dockerfile都必须以FROM命令开始。 FROM命令会指定镜像基于哪个基础镜像创建，接下来的命令也会基于这个基础镜像（译者注：CentOS和Ubuntu有些命令可是不一样的）。FROM命令可以多次使用，表示会创建多个镜像。具体语法如下：
+```
+FROM <image name>
+```
+
+* MAINTAINER <author name> 设置镜像作者
+
+*  RUN
+
+run命令 在shell或者exec的环境下执行的命令。RUN指令会在新创建的镜像上添加新的层面，接下来提交的结果用在Dockerfile的下一条指令中。语法如下：
+```
+RUN 《command》
+```
+
+* ADD
+
+复制文件指令。它有两个参数<source>和<destination>。destination是容器内的路径。source可以是URL或者是启动配置上下文中的一个文件。语法如下：
+```
+ADD 《src》 《destination》
+```
+
+* CMD
+
+提供了容器默认的执行命令。 Dockerfile只允许使用一次CMD指令。 使用多个CMD会抵消之前所有的指令，只有最后一个指令生效。 CMD有三种形式：
+```
+CMD ["executable","param1","param2"]
+CMD ["param1","param2"]
+CMD command param1 param2
+```
+
+* EXPOSE
+
+指定容器在运行时监听的端口。语法如下：
+```
+EXPOSE <port>;
+```
+
+* ENTRYPOINT
+
+配置给容器一个可执行的命令，这意味着在每次使用镜像创建容器时一个特定的应用程序可以被设置为默认程序。同时也意味着该镜像每次被调用时仅能运行指定的应用。类似于CMD，Docker只允许一个ENTRYPOINT，多个ENTRYPOINT会抵消之前所有的指令，只执行最后的ENTRYPOINT指令。语法如下：
+```
+ENTRYPOINT ["executable", "param1","param2"]
+ENTRYPOINT command param1 param2
+```
+
+* WORKDIR
+
+指定RUN、CMD与ENTRYPOINT命令的工作目录。语法如下：
+```
+WORKDIR /path/to/workdir
+```
+
+* ENV
+
+设置环境变量。它们使用键值对，增加运行程序的灵活性。语法如下：
+```
+ENV <key> <value>
+```
+
+* USER
+
+镜像正在运行时设置一个UID。语法如下：
+```
+USER <uid>
+```
+
+* VOLUME
+
+授权访问从容器内到主机上的目录。语法如下：
+```
+VOLUME ["/data"]
+```
+
+## Dockerfile 创建nginx服务器
+
+Dockerfile
+
+```
+############################################################
+
+# Dockerfile to build Nginx Installed Containers
+
+# Based on Ubuntu
+
+############################################################
+
+# Set the base image to Ubuntu
+
+FROM ubuntu
+
+# File Author / Maintainer
+
+MAINTAINER Maintaner Name
+
+# Install Nginx
+
+# Add application repository URL to the default sources
+
+# RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
+
+# Update the repository
+
+RUN apt-get update
+
+# Install necessary tools
+
+RUN apt-get install -y nano wget dialog net-tools
+
+# Download and Install Nginx
+
+RUN apt-get install -y nginx
+
+# Remove the default Nginx configuration file
+
+RUN rm -v /etc/nginx/nginx.conf
+
+# Copy a configuration file from the current directory
+
+ADD nginx.conf /etc/nginx/
+
+# Append "daemon off;" to the beginning of the configuration
+
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Expose ports
+
+EXPOSE 80
+
+# Set the default command to execute
+
+# when creating a new container
+
+CMD service nginx start
+```
+
+nginx.conf
+
+```
+worker_processes 1;
+events { worker_connections 1024; }
+http {
+     sendfile on;
+     server {
+         listen 80;
+         location / {
+              proxy_pass http://httpstat.us/;
+              proxy_set_header X-Real-IP $remote_addr;
+         }
+     }
+}
+```
+
+* 创建镜像 docker build
+
+```
+$docker build -t doctording/nginx:1.0 .
+```
+
+![](./imgs/nginx/1.png)
+
+![](./imgs/nginx/2.png)
+
+* 创建容器运行
+
+```
+$docker run -t -i --name mynginx doctording/nginx:1.0 /bin/bash
+```
+![](./imgs/nginx/3.png)
+
+---
